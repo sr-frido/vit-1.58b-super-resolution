@@ -1,0 +1,44 @@
+#Version 03/03/2026 PSNR (FULL-RGB) >27dB
+exp_name: div2k_x4_vit158b
+scale: 4
+
+data:
+  hr_train: data/DIV2K/HR_train
+  lr_train: data/DIV2K/LR_bicubic/X4_train
+  hr_val:   data/DIV2K/HR_val
+  lr_val:   data/DIV2K/LR_bicubic/X4_val
+  patch_size: 128        # HR crop
+  batch_size: 8
+  num_workers: 4
+
+model:
+  name: vit_sr_158b
+  img_channels: 3
+  embed_dim: 192
+  depth: 12
+  num_heads: 6
+  mlp_ratio: 4.0
+  quant:
+    weight: "ternary_absmean"   # {-1,0,1}
+    act_bits: 8                 # activaciones 8-bit (absmax)
+    ste: true
+
+train:
+  epochs: 200
+  lr: 2.0e-5
+  amp: false           # empezar sin AMP hasta que sea estable
+  ramp_fp_epochs: 3    # epochs 1..3: FP
+  ramp_act_epochs: 3   # epochs 4..6: act quant
+  ramp_w_epochs: 10    # número de epochs para subir alpha_w 0->1
+  weight_decay: 0.0
+  grad_clip: 1.0
+  amp: false
+  save_every: 10
+  val_every: 10
+
+val:
+  tile: 96
+  overlap: 8
+  max_images: 10    # valida solo 10 imágenes
+loss:
+  name: l1
