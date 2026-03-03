@@ -1,8 +1,29 @@
-/.venv
-/__pycache__
+# Python
+__pycache__/
 *.pyc
-/runs
-/checkpoints
-/data
+*.pyo
+*.pyd
+.venv/
+env/
+
+# PyTorch
 *.pt
 *.pth
+
+# Checkpoints
+checkpoints/
+runs/
+logs/
+
+# Data
+data/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# VSCode
+.vscode/
+
+# Gradio temp
+gradio_cached_examples/
