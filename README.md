@@ -22,15 +22,18 @@ python train.py --cfg configs/div2k_x4_vit158b.yaml
 Run:
 
 python app_sr.py --ckpt checkpoints/div2k_x4_vit158b_best.pt --web
+(Se abrirá en http://127.0.0.1:7860/)
 
 
-Pendiente:
+## Pendiente:
+Corregir la evaluación de psnr en full RGB a solo luminancia
+Añadir metricas de SSIM (Hay quien usa MSE pero no veo que de valores muy representativos de la calidad del modelo)
 Descenso paulatino de la tasa de aprendizaje empezar en 1e-4 y terminar en 1e-5 por ejemplo?
 Más bloques y menos tokens
 Atención local en vez de global (aplicar ventantas tipo Swin)
 ¿Entrenar con ImageNet?
-Entrenar con algo que no sea FP16 (arquitectura de la GPU)
+Entrenar con algo que no sea FP16 (arquitectura de la GPU) idealmente int8 y aprovechar la implementación de + en vez de *
+¿Como hago que se de cuenta de perfilar más finas las lineas? (Quizá con la mejora de meter más bloques y meter ventana dentro del patch)
 
-
-Opcionales:
-appWeb
+## Opcionales:
+appWeb (primera versión lista)
