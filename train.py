@@ -6,7 +6,7 @@ from torch.cuda.amp import autocast, GradScaler
 from tqdm import tqdm
 
 from src.datasets.div2k import DIV2KPairDataset
-from src.utils.metrics import psnr
+from src.utils.metrics import psnr_rgb, psnr_y, ssim_y
 from src.models.vit_sr_158b import ViTSR158b
 
 
@@ -66,21 +66,29 @@ def load_cfg(path):
     with open(path, "r") as f:
         return yaml.safe_load(f)
 
-
+#PSNR FULLRGB Y LUMINANCIA Y SSIM LUMINANCIA
 @torch.no_grad()
-def validate(model, dl, device, scale=4, tile=64, overlap=16, max_images=None):
+def validate(model, dl, device, scale=4, tile=96, overlap=8):
     model.eval()
-    psnrs = []
-    for i, (lr, hr) in enumerate(dl):
-        if (i + 1) % 5 == 0:
-            print(f"[val] {i+1} images done")
-        if max_images is not None and i >= max_images:
-            break
+    psnr_rgb_vals = []
+    psnr_y_vals = []
+    ssim_y_vals = []
+
+    for lr, hr in dl:
         lr = lr.to(device, non_blocking=True)
         hr = hr.to(device, non_blocking=True)
+
         sr = tile_inference(model, lr, scale=scale, tile=tile, overlap=overlap, device=device).clamp(0, 1)
-        psnrs.append(psnr(sr, hr).mean().item())
-    return sum(psnrs) / max(1, len(psnrs))
+
+        psnr_rgb_vals.append(psnr_rgb(sr, hr).mean().item())
+        psnr_y_vals.append(psnr_y(sr, hr, shave=scale).mean().item())
+        ssim_y_vals.append(ssim_y(sr, hr, shave=scale).mean().item())
+
+    return {
+        "psnr_rgb": sum(psnr_rgb_vals) / max(1, len(psnr_rgb_vals)),
+        "psnr_y": sum(psnr_y_vals) / max(1, len(psnr_y_vals)),
+        "ssim_y": sum(ssim_y_vals) / max(1, len(ssim_y_vals)),
+    }
 
 
 def main(cfg_path):

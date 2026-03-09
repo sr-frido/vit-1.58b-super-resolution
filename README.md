@@ -24,6 +24,16 @@ Run:
 python app_sr.py --ckpt checkpoints/div2k_x4_vit158b_best.pt --web
 (Se abrirá en http://127.0.0.1:7860/)
 
+Eval:
+
+#python eval.py \
+#  --cfg configs/div2k_x4_vit158b.yaml \    configuración del modelo 
+#  --ckpt checkpoints/div2k_x4_vit158b_best.pt \ modelo a testear
+#  --max_images 50 \    
+#  --tile 96 \   tamaño del patch
+#  --overlap 8 \  overlap entre patches
+#  --lpips       usar alexnet como metrica de distancia perceptual <0.2 bueno  >0.5 kk
+
 
 ## Pendiente:
 Corregir la evaluación de psnr en full RGB a solo luminancia
